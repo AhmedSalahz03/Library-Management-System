@@ -53,3 +53,26 @@ QTableView::horizontalHeader {
 QTableView::verticalHeader {
     border-right: 1px solid #ccc; /* Add border at right of vertical header */
 }
+QTimeEdit {
+    padding: 5px; /* Adjust padding as needed */
+    font-size: 14px; /* Adjust font size as needed */
+    border: 2px solid #ccc; /* Add a border */
+    border-radius: 5px; /* Add rounded corners */
+}
+
+QTimeEdit::up-button, QTimeEdit::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 20px; /* Adjust width as needed */
+    border-left: 1px solid #ccc; /* Add border to the left of the buttons */
+    background-color: #4CAF50; /* Set background color of the buttons */
+    color: white; /* Set text color of the buttons */
+}
+
+QTimeEdit::up-button:hover, QTimeEdit::down-button:hover {
+    background-color: #45a049; /* Darken background color of the buttons on hover */
+}
+
+QTimeEdit::up-button:pressed, QTimeEdit::down-button:pressed {
+    background-color: #3e8e41; /* Darken background color of the buttons when pressed */
+}

@@ -7,7 +7,9 @@
 #include <QtCore/QFile>
 #include <qtableview.h>
 #include <QSqlTableModel>
-#include <QLabel>;
+#include <QLabel>
+#include <qmessagebox.h>
+#include <QDateEdit>
 
 class MembersPage : public QWidget
 {
@@ -22,9 +24,11 @@ signals:
 public slots:
 	void addMember();
 	void setSizeForLineEdit(QLineEdit*);
-	void deleteSelectedRow();
+	void deleteSelectedRow(QTableView*, QSqlTableModel*);
 	void inspectMember();
 	void backToTableView();
+	void lend();
+	void endLendInspect();
 
 private:
 	Ui::MembersPageClass ui;
@@ -55,6 +59,11 @@ private:
 
 	QSqlTableModel* borrowedBooksofMembersModel;
 	QTableView* borrowedBooksofMembersTableView;
+	QLineEdit* lendCopyIdTF;
+	QDateEdit* lendStartDate;
+	QDateEdit* lendDueDate;
+	QPushButton* lendBtn;
+	QPushButton* endLendBtn;
 
 
 };

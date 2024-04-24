@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 {
     qInstallMessageHandler(customMessageHandler);
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName("LMS QT DB2"); // Use the name of your ODBC data source
+    db.setDatabaseName("LMS QT DB3"); // Use the name of your ODBC data source
     db.setUserName("YourUsername"); // If required
     db.setPassword("YourPassword"); // If required
 

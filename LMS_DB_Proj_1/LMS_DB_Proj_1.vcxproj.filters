@@ -55,6 +55,12 @@
     <ClCompile Include="MemberCustomPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CommonData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BooksPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="loginPage.h">
@@ -70,6 +76,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="MemberCustomPage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="BooksPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -89,9 +98,15 @@
     <QtUic Include="MemberCustomPage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="BooksPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

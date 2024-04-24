@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_LMS_DB_Proj_1.h"
-
+#include "CommonData.h"
 
 #include <QMainWindow>
 #include <QWidget>
@@ -11,7 +11,8 @@
 #include "Homepage.h"
 #include "MembersPage.h"
 #include "MemberCustomPage.h"
-//#include "settingspage.h"
+#include "BooksPage.h"
+#include "Eventspage.h"
 
 class LMS_DB_Proj_1 : public QMainWindow
 {
@@ -22,12 +23,17 @@ public:
     ~LMS_DB_Proj_1();
 
 private:
+
+    QString* userType;
+
     QWidget* centralWidget;
     QStackedWidget* stackedWidget;
     LoginPage* loginPage;
     HomePage* homePage;
     MembersPage* membersPage;
+    BooksPage* booksPage;
     MemberCustomPage* memberCustomPage;
+    EventsPage* eventsPage;
     QWidget* sidebarWidget; // Sidebar container
     QVBoxLayout* sidebarLayout; // Layout for sidebar buttons
 
@@ -35,11 +41,15 @@ private:
     QPushButton* menuSettingsButton;
     QPushButton* menuMembersButton;
     QPushButton* menuLoginButton;
-    //SettingsPage* settingsPage;
+    QPushButton* menuBooksButton;
+    QPushButton* menuEventsButton;
+
+    QLabel* smallIdL;
 
     void setupUi();
     void setupConnections();
     void showSidebar(bool show); // Method to show/hide the sidebar
     void updateButtonStatus(QPushButton*, bool);
+    void showEventsPage();
 
 };

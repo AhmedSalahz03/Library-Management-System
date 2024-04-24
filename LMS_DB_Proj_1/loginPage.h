@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QVBoxLayout>
+#include "CommonData.h"
 
 class LoginPage : public QWidget
 {
@@ -13,14 +14,18 @@ class LoginPage : public QWidget
 public:
     explicit LoginPage(QWidget* parent = nullptr);
 
+public slots:
+    QString* getLibrarianId();
+
 signals:
     void loginSuccessful();
 
 private:
-    QLineEdit* usernameEdit;
-    QLineEdit* passwordEdit;
-    QPushButton* loginButton;
-    QVBoxLayout* layout;
+    QLineEdit* userIdTF;
+    QLineEdit* passwordTF;
+    QPushButton* loginBtn;
+    QString* librarianId;
+    
 
 private slots:
     void attemptLogin();

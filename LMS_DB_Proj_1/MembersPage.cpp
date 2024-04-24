@@ -1,4 +1,5 @@
 #include "MembersPage.h"
+#include "CommonData.h"
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QDebug>
@@ -17,7 +18,7 @@ MembersPage::MembersPage(QWidget *parent)
 	: QWidget(parent)
 {
 	ui.setupUi(this);
-    int startY = 20; // Initial y-coordinate for the first QLineEdit
+    int startY = 40; // Initial y-coordinate for the first QLineEdit
     int spacing = 60; // Spacing between QLineEdit widgets
 
     firstNameTF = new QLineEdit(this);
@@ -96,7 +97,7 @@ MembersPage::MembersPage(QWidget *parent)
 
     doneInspectingBtn = new QPushButton(this);
     doneInspectingBtn->setText("Back");
-    doneInspectingBtn->move(1500, 20);
+    doneInspectingBtn->move(1300, 20);
 
     fNameInspectL->hide();
     lNameInspectL->hide();
@@ -107,15 +108,38 @@ MembersPage::MembersPage(QWidget *parent)
     streetInspectL->hide();
     doneInspectingBtn->hide();
     
+    lendCopyIdTF = new QLineEdit(this);
+    lendStartDate = new QDateEdit(this);
+    lendDueDate = new QDateEdit(this);
+    lendBtn = new QPushButton(this);
+    endLendBtn = new QPushButton(this);
 
+    lendDueDate->setCalendarPopup(true);
+    lendStartDate->setCalendarPopup(true);
 
+    lendCopyIdTF->move(1000, startY);
+    lendStartDate->move(1000, startY + spacing);
+    lendDueDate->move(1000, startY + 2 * spacing);
+    lendBtn->move(1000, startY + 3 * spacing);
+    endLendBtn->move(1200, startY + 3 * spacing);
+
+    lendStartDate->setDate(QDate::currentDate());
+    lendDueDate->setDate(QDate::currentDate());
+    lendBtn->setText("Lend");
+    endLendBtn->setText("End Lend");
+
+    lendCopyIdTF->hide();
+    lendDueDate->hide();
+    lendStartDate->hide();
+    lendBtn->hide();
+    endLendBtn->hide();
 
     borrowedBooksofMembersModel = new QSqlTableModel(this);
     borrowedBooksofMembersTableView = new QTableView(this);
     borrowedBooksofMembersTableView->setParent(this); // Set the parent to the MembersPage widget
     borrowedBooksofMembersTableView->setModel(borrowedBooksofMembersModel);
-    borrowedBooksofMembersTableView->setGeometry(500, startY, 1000, 900);
-
+    borrowedBooksofMembersTableView->setGeometry(300, startY, 500, 400);
+    borrowedBooksofMembersTableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     borrowedBooksofMembersTableView->hide();
 
     // Connect the Stylesheet File
@@ -136,18 +160,29 @@ MembersPage::MembersPage(QWidget *parent)
         searchForMemberIdTF->setStyleSheet(styleSheet);
         searchForMemberIdBtn->setStyleSheet(styleSheet);
         doneInspectingBtn->setStyleSheet(styleSheet);
+        lendCopyIdTF->setStyleSheet(styleSheet);
+        endLendBtn->setStyleSheet(styleSheet);
+        lendBtn->setStyleSheet(styleSheet);
+        borrowedBooksofMembersTableView->setStyleSheet(styleSheet);
         styleFile.close();
         
 
     }
 
     // Connect button's clicked signal to deleteSelectedRow slot
-    connect(deleteMemberBtn, &QPushButton::clicked, this, &MembersPage::deleteSelectedRow);
-
+    connect(deleteMemberBtn, &QPushButton::clicked, this, [=]() {
+        deleteSelectedRow(allMembersTableView, allMembersModel);
+        });
     connect(searchForMemberIdBtn, &QPushButton::clicked, this, &MembersPage::inspectMember);
 	
     connect(doneInspectingBtn, &QPushButton::clicked, this, &MembersPage::backToTableView);
 
+    connect(lendBtn, &QPushButton::clicked, this, &MembersPage::lend);
+    
+    // connect(endLendBtn, &QPushButton::clicked, this, [=]() {
+    //    deleteSelectedRow(borrowedBooksofMembersTableView, borrowedBooksofMembersModel);
+    //    });
+    connect(endLendBtn, &QPushButton::clicked, this, &MembersPage::endLendInspect);
 }
 
 MembersPage::~MembersPage()
@@ -187,15 +222,16 @@ void MembersPage::addMember() {
 void MembersPage::setSizeForLineEdit(QLineEdit *LineEdit) {
     LineEdit->resize(350, 40);
 }
-void MembersPage::deleteSelectedRow() {
-    QModelIndexList selectedRows = allMembersTableView->selectionModel()->selectedRows();
-    // Remove selected rows from the model in reverse order
-    for (int i = selectedRows.count() - 1; i >= 0; --i) {
-        allMembersModel->removeRow(selectedRows.at(i).row());
+void MembersPage::deleteSelectedRow(QTableView* tableView, QSqlTableModel* tableModel) {
+    QModelIndexList selectedRows = tableView->selectionModel()->selectedRows();
+    // Check if there's at least one selected row
+    if (!selectedRows.isEmpty()) {
+        // Remove the first selected row
+        tableModel->removeRow(selectedRows.first().row());
+        // Refresh the model to reflect the changes
+        tableModel->select();
     }
-    allMembersModel->select();
-    allMembersTableView->show();
-    
+
 }
 void MembersPage::inspectMember() {
     QString memberID = searchForMemberIdTF->text();
@@ -220,11 +256,9 @@ void MembersPage::inspectMember() {
     else {
         // Handle the case where the query fails or no result is found
         // For simplicity, set default values or handle errors
-        QDialog 
-        fName = "Unknown";
-        lName = "Unknown";
-        email = "Unknown";
-        phone = "Unknown";
+        QMessageBox::warning(this, "Not Found", "This Member doesn't exist");
+        backToTableView();
+        return;
     }
 
     QString query2 = "SELECT b.CopyID, BookName, StartDate, DueDate FROM Books b, Borrows bs WHERE MemberID = :memberId AND b.CopyID = bs.CopyID"; // Example query
@@ -275,6 +309,11 @@ void MembersPage::inspectMember() {
     streetInspectL->show();
     doneInspectingBtn->show();
     borrowedBooksofMembersTableView->show();
+    lendCopyIdTF->show();
+    lendDueDate->show();
+    lendStartDate->show();
+    lendBtn->show();
+    endLendBtn->show();
 
     firstNameTF->hide();
     lastNameTF->hide();
@@ -300,6 +339,11 @@ void MembersPage::backToTableView() {
     streetInspectL->hide();
     doneInspectingBtn->hide();
     borrowedBooksofMembersTableView->hide();
+    lendCopyIdTF->hide();
+    lendDueDate->hide();
+    lendStartDate->hide();
+    lendBtn->hide();
+    endLendBtn->hide();
 
     allMembersTableView->show();
     firstNameTF->show();
@@ -314,3 +358,123 @@ void MembersPage::backToTableView() {
     searchForMemberIdBtn->show();
     searchForMemberIdTF->show();
 }
+void MembersPage::lend() {
+    QString copyIdLend = lendCopyIdTF->text();
+    QString memberIdLend = searchForMemberIdTF->text();
+    QDate startDateLend = lendStartDate->date();
+    QDate dueDateLend = lendDueDate->date();
+
+    QSqlQuery chkLibrarianBranch;
+    chkLibrarianBranch.prepare("SELECT BranchID FROM Librarians WHERE LibrarianID = ?");
+    chkLibrarianBranch.addBindValue(CommonData::getInstance().getUsername());
+
+    chkLibrarianBranch.exec();
+
+    if (chkLibrarianBranch.next()) { // Check if there is a result
+        QString currentBranchId = chkLibrarianBranch.value(0).toString();
+
+        QSqlQuery chkBookBranch;
+        chkBookBranch.prepare("SELECT b.CopyID FROM Books b, Supplies s WHERE b.CopyID = s.CopyID AND b.CopyID = :copyId AND s.BranchID = :branchId");
+        chkBookBranch.bindValue(":copyId", copyIdLend);
+        chkBookBranch.bindValue(":branchId", currentBranchId);
+
+        chkBookBranch.exec();
+
+        if (chkBookBranch.next()) { // Check if there is a result
+            // Book found in this branch, proceed with lending
+        }
+        else {
+            QMessageBox::warning(this, "Not in this Branch", "The book is not available in this branch.");
+            return;
+        }
+    }
+    else {
+        // Error: Librarian ID not found or other issue with the query
+        QMessageBox::warning(this, "Error", "Unable to retrieve librarian information.");
+        return;
+    }
+
+
+    // Prepare the SQL query to check if the copyId exists in the 'Borrows' table
+    QString chkQuery = "SELECT COUNT(*) FROM Borrows WHERE CopyID = :copyId";
+
+    // Prepare the query
+    QSqlQuery checkQuery;
+    checkQuery.prepare(chkQuery);
+
+    // Bind the copyId value to the query
+    checkQuery.bindValue(":copyId", copyIdLend);
+
+    // Execute the query
+    if (checkQuery.exec()) {
+        // Check if any rows were returned
+        if (checkQuery.next()) {
+            int count = checkQuery.value(0).toInt();
+            if (count > 0) {
+                // The book is already borrowed
+                qDebug() << "Book with copyId" << copyIdLend << "is already borrowed.";
+                // Inform the user accordingly (e.g., show a message)
+                QMessageBox::warning(this, "Already Lended", "This book is already lended");
+                return;
+            }
+            else {
+                // The book is available for borrowing
+                qDebug() << "Book with copyId" << copyIdLend << "is available for borrowing.";
+                // Proceed with the insertion logic
+            }
+        }
+    }
+    else {
+        // Error executing the query
+        qDebug() << "Error executing query:" << checkQuery.lastError().text();
+    }
+
+
+    QString query3 = "INSERT INTO Borrows (MemberID, CopyID, StartDate, DueDate) VALUES (:memberId, :copyId, :startDate, :dueDate)";
+    // Prepare the query
+    QSqlQuery q3;
+    q3.prepare(query3);
+
+    // Bind values to the placeholders
+    q3.bindValue(":memberId", memberIdLend);
+    q3.bindValue(":copyId", copyIdLend);
+    q3.bindValue(":startDate", startDateLend);
+    q3.bindValue(":dueDate", dueDateLend);
+
+    // Execute the query
+    if (q3.exec()) {
+        // Insertion successful
+        qDebug() << "Data inserted into Borrows table";
+    }
+    else {
+        // Insertion failed
+        qDebug() << "Error inserting data into Borrows table:" << q3.lastError().text();
+    }
+    inspectMember();
+}
+void MembersPage::endLendInspect() {
+    // Assuming you have a QTableView named tableView
+    QItemSelectionModel* select = borrowedBooksofMembersTableView->selectionModel();
+
+    // Get selected rows
+    QModelIndexList rows = select->selectedRows();
+
+    // Since there's only one row, directly access it
+    QModelIndex index = rows.at(0);
+    
+    QVariant data = borrowedBooksofMembersTableView->model()->data(index.siblingAtColumn(0));
+
+    // Now you can use the data
+    QString copyId =  data.toString();
+
+    QString endLendQuery = "DELETE FROM Borrows WHERE CopyID = ?";
+    QSqlQuery q4;
+    q4.prepare(endLendQuery);
+    q4.addBindValue(copyId);
+    if(!q4.exec()) {
+        qDebug() << "Error executing query: " << q4.lastError();
+    }
+
+    inspectMember();
+}
+
