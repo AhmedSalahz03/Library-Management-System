@@ -35,6 +35,7 @@ public:
 
 public slots:
 	void addEvent();
+	void deleteSelectedRow(QTableView* tableView, QSqlTableModel* tableModel);
 
 private:
 	Ui::EventsPageClass ui;
@@ -48,4 +49,5 @@ private:
 	QLineEdit* eventDescriptionTF;
 	QLineEdit* eventMaxCapacityTF;
 	QPushButton* insertEventBtn;
+	QPushButton* deleteEventBtn;
 };

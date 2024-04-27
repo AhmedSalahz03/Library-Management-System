@@ -29,6 +29,10 @@ public slots:
 	void backToTableView();
 	void lend();
 	void endLendInspect();
+	void handleDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles);
+	void addMemberToEvent();
+	QString getBranchId();
+	void deleteMemberFromEvent();
 
 private:
 	Ui::MembersPageClass ui;
@@ -65,5 +69,11 @@ private:
 	QPushButton* lendBtn;
 	QPushButton* endLendBtn;
 
+	QSqlTableModel* attendedEventsModel;
+	QTableView* attendedEventsTable;
+	QLineEdit* eventIdTF;
+	QPushButton* addMemberToEventBtn;
+	QPushButton* deleteMemberFromEventBtn;
+	
 
 };

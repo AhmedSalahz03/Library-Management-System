@@ -30,6 +30,19 @@ public:
 	QSqlTableModel* searchedBookTableModel;
 	QTableView* searchedBookTableView;
 	QPushButton* searchBtn;
+	
+	QPushButton* newBatchBtn;
+	QLineEdit* bookNameTF;
+	QLineEdit* authorNameTF;
+	QLineEdit* editionTF;
+	QLineEdit* publisherIdTF;
+	QLineEdit* noOfPagesTF;
+	QLineEdit* languageTF;
+	QLineEdit* noOfCopiesTF;
+	QChoiceBox* categoryCB;
+	QLineEdit* supplierIdTF;
+
+	QPushButton* addBatchBtn;
 public slots:
 	void searchForBook();
 private:

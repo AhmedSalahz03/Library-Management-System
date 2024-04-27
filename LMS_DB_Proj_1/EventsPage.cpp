@@ -52,6 +52,8 @@ EventsPage::EventsPage(QWidget *parent)
     allEventsTable->setColumnWidth(6, 150);
     allEventsTable->setColumnWidth(7, 150);
 
+    deleteEventBtn = new QPushButton("Delete Event", this);
+    deleteEventBtn->move(20, startY + 6 * spacing);
 
     // Connect the Stylesheet File
     QFile styleFile("stylesheet.qss");
@@ -65,18 +67,26 @@ EventsPage::EventsPage(QWidget *parent)
         eventTimeTF->setStyleSheet(styleSheet);
         insertEventBtn->setStyleSheet(styleSheet);
         allEventsTable->setStyleSheet(styleSheet);
-        
+        deleteEventBtn->setStyleSheet(styleSheet);
         styleFile.close();
 
 
     }
 
     connect(insertEventBtn, &QPushButton::clicked, this, &EventsPage::addEvent);
+    // Connect button's clicked signal to deleteSelectedRow slot
+    connect(deleteEventBtn, &QPushButton::clicked, this, [=]() {
+        deleteSelectedRow(allEventsTable, allEventsTableModel);
+        });
 }
 
 EventsPage::~EventsPage()
 {}
 void EventsPage::addEvent() {
+    if(CommonData::getInstance().getType() != "M") {
+        QMessageBox::warning(this, "Error", "You are not authorized to add events");
+        return;
+    }
     // Retrieve data from QLineEdit fields
     QString eventTitleValue = eventTitleTF->text();
     QString eventDescriptionValue = eventDescriptionTF->text();
@@ -110,4 +120,15 @@ void EventsPage::addEvent() {
 }
 void EventsPage::setSizeForLineEdit(QLineEdit* LineEdit) {
     LineEdit->resize(350, 40);
+}
+void EventsPage::deleteSelectedRow(QTableView* tableView, QSqlTableModel* tableModel) {
+    QModelIndexList selectedRows = tableView->selectionModel()->selectedRows();
+    // Check if there's at least one selected row
+    if (!selectedRows.isEmpty()) {
+        // Remove the first selected row
+        tableModel->removeRow(selectedRows.first().row());
+        // Refresh the model to reflect the changes
+        tableModel->select();
+    }
+
 }

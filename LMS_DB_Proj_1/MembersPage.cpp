@@ -54,7 +54,7 @@ MembersPage::MembersPage(QWidget *parent)
     allMembersTableView = new QTableView(this);
     allMembersTableView->setParent(this); // Set the parent to the MembersPage widget
     allMembersTableView->setModel(allMembersModel);
-    allMembersTableView->setGeometry(500, startY , 1000, 900);
+    allMembersTableView->setGeometry(500, startY , 1000, 700);
     // Enable row selection
     allMembersTableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
 
@@ -142,6 +142,28 @@ MembersPage::MembersPage(QWidget *parent)
     borrowedBooksofMembersTableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     borrowedBooksofMembersTableView->hide();
 
+    attendedEventsModel = new QSqlTableModel(this);
+    attendedEventsTable = new QTableView(this);
+    attendedEventsTable->setParent(this); // Set the parent to the MembersPage widget
+    attendedEventsTable->setModel(attendedEventsModel);
+    attendedEventsTable->setGeometry(300, startY+500, 500, 400);
+    attendedEventsTable->setSelectionMode(QAbstractItemView::ContiguousSelection);
+    attendedEventsTable->hide();
+
+    eventIdTF = new QLineEdit(this);
+    eventIdTF->move(1000, startY + 8 * spacing);
+    eventIdTF->setPlaceholderText("Event ID");
+    addMemberToEventBtn = new QPushButton(this);
+    addMemberToEventBtn->setText("Add Member to Event");
+    addMemberToEventBtn->move(1000, startY + 9 * spacing);
+    addMemberToEventBtn->hide();
+    eventIdTF->hide();
+
+    deleteMemberFromEventBtn = new QPushButton(this);
+    deleteMemberFromEventBtn->setText("Delete Member from Event");
+    deleteMemberFromEventBtn->move(1200, startY + 10 * spacing);
+    deleteMemberFromEventBtn->hide();
+
     // Connect the Stylesheet File
     QFile styleFile("stylesheet.qss");
     if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
@@ -164,6 +186,10 @@ MembersPage::MembersPage(QWidget *parent)
         endLendBtn->setStyleSheet(styleSheet);
         lendBtn->setStyleSheet(styleSheet);
         borrowedBooksofMembersTableView->setStyleSheet(styleSheet);
+        attendedEventsTable->setStyleSheet(styleSheet);
+        eventIdTF->setStyleSheet(styleSheet);
+        addMemberToEventBtn->setStyleSheet(styleSheet);
+        deleteMemberFromEventBtn->setStyleSheet(styleSheet);
         styleFile.close();
         
 
@@ -183,6 +209,13 @@ MembersPage::MembersPage(QWidget *parent)
     //    deleteSelectedRow(borrowedBooksofMembersTableView, borrowedBooksofMembersModel);
     //    });
     connect(endLendBtn, &QPushButton::clicked, this, &MembersPage::endLendInspect);
+
+    // Connect the dataChanged signal to a custom slot
+    connect(allMembersModel, &QSqlTableModel::dataChanged, this, &MembersPage::handleDataChanged);
+
+    connect(addMemberToEventBtn, &QPushButton::clicked, this, &MembersPage::addMemberToEvent);
+
+    connect(deleteMemberFromEventBtn, &QPushButton::clicked, this, &MembersPage::deleteMemberFromEvent);
 }
 
 MembersPage::~MembersPage()
@@ -291,6 +324,25 @@ void MembersPage::inspectMember() {
         qDebug() << "Error executing query:" << q2.lastError().text();
     }
 
+    QString query3 = "SELECT e.EventID, Title, Datee FROM Eventss e, Attends a WHERE MemberID = :memberId AND e.EventID = a.EventID"; // Example query
+    QSqlQuery q3;
+    q3.prepare(query3);
+    q3.bindValue(":memberId", memberID); // Example value
+    attendedEventsModel->setQuery(query3);
+    if (q3.exec()) {
+        attendedEventsModel->setQuery(q3);
+        if (attendedEventsModel->lastError().isValid()) {
+            qDebug() << "Error setting query to model:" << attendedEventsModel->lastError().text();
+        }
+        else {
+            attendedEventsTable->setModel(attendedEventsModel);
+            attendedEventsTable->show();
+        }
+    }
+    else {
+        qDebug() << "Error executing query:" << q3.lastError().text();
+    }
+
     // Update the text of the QLabel to display the attributes
     fNameInspectL->setText("First Name: " + fName);
     lNameInspectL->setText("Last Name: " + lName);
@@ -314,6 +366,10 @@ void MembersPage::inspectMember() {
     lendStartDate->show();
     lendBtn->show();
     endLendBtn->show();
+    attendedEventsTable->show();
+    eventIdTF->show();
+    addMemberToEventBtn->show();
+    deleteMemberFromEventBtn->show();
 
     firstNameTF->hide();
     lastNameTF->hide();
@@ -344,6 +400,10 @@ void MembersPage::backToTableView() {
     lendStartDate->hide();
     lendBtn->hide();
     endLendBtn->hide();
+    attendedEventsTable->hide();
+    eventIdTF->hide();
+    addMemberToEventBtn->hide();
+    deleteMemberFromEventBtn->hide();
 
     allMembersTableView->show();
     firstNameTF->show();
@@ -364,35 +424,25 @@ void MembersPage::lend() {
     QDate startDateLend = lendStartDate->date();
     QDate dueDateLend = lendDueDate->date();
 
-    QSqlQuery chkLibrarianBranch;
-    chkLibrarianBranch.prepare("SELECT BranchID FROM Librarians WHERE LibrarianID = ?");
-    chkLibrarianBranch.addBindValue(CommonData::getInstance().getUsername());
+    
+    QString currentBranchId = getBranchId();
 
-    chkLibrarianBranch.exec();
+    QSqlQuery chkBookBranch;
+    chkBookBranch.prepare("SELECT b.CopyID FROM Books b, Supplies s WHERE b.CopyID = s.CopyID AND b.CopyID = :copyId AND s.BranchID = :branchId");
+    chkBookBranch.bindValue(":copyId", copyIdLend);
+    chkBookBranch.bindValue(":branchId", currentBranchId);
 
-    if (chkLibrarianBranch.next()) { // Check if there is a result
-        QString currentBranchId = chkLibrarianBranch.value(0).toString();
+    chkBookBranch.exec();
 
-        QSqlQuery chkBookBranch;
-        chkBookBranch.prepare("SELECT b.CopyID FROM Books b, Supplies s WHERE b.CopyID = s.CopyID AND b.CopyID = :copyId AND s.BranchID = :branchId");
-        chkBookBranch.bindValue(":copyId", copyIdLend);
-        chkBookBranch.bindValue(":branchId", currentBranchId);
-
-        chkBookBranch.exec();
-
-        if (chkBookBranch.next()) { // Check if there is a result
-            // Book found in this branch, proceed with lending
-        }
-        else {
-            QMessageBox::warning(this, "Not in this Branch", "The book is not available in this branch.");
-            return;
-        }
+    if (chkBookBranch.next()) { // Check if there is a result
+        // Book found in this branch, proceed with lending
     }
     else {
-        // Error: Librarian ID not found or other issue with the query
-        QMessageBox::warning(this, "Error", "Unable to retrieve librarian information.");
+        QMessageBox::warning(this, "Not in this Branch", "The book is not available in this branch.");
         return;
     }
+  
+    
 
 
     // Prepare the SQL query to check if the copyId exists in the 'Borrows' table
@@ -477,4 +527,118 @@ void MembersPage::endLendInspect() {
 
     inspectMember();
 }
+// Slot to handle the dataChanged signal
+void MembersPage::handleDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles)
+{
+    // Check if the edited cell falls within the range of the dataChanged signal
+    if (topLeft.isValid() && bottomRight.isValid()) {
+        // Check if the edited cell is in the first column (column index 0)
+        if (topLeft.column() == 0) {
+            qDebug() << "Cell edited in the first column at row:" << topLeft.row();
+            // Additional processing if needed
 
+            // Refresh the table
+            allMembersModel->select();
+        }
+    }
+}
+void MembersPage::addMemberToEvent(){
+    
+    QString branchId = getBranchId();
+
+    QString memberID = searchForMemberIdTF->text();
+    QString eventID = eventIdTF->text();
+
+
+    // Count the number of attendees
+    QSqlQuery countQuery;
+    countQuery.prepare("SELECT COUNT(*) FROM Attends WHERE EventID = ?");
+    countQuery.addBindValue(eventID);
+    countQuery.exec();
+    countQuery.next();
+    int attendeeCount = countQuery.value(0).toInt();
+
+    // Get the max capacity of the event
+    QSqlQuery capacityQuery;
+    capacityQuery.prepare("SELECT MaxCapacity FROM Eventss WHERE EventID = ?");
+    capacityQuery.addBindValue(eventID);
+    capacityQuery.exec();
+    capacityQuery.next();
+    int maxCapacity = capacityQuery.value(0).toInt();
+
+    // Check if the event is at full capacity
+    if (attendeeCount >= maxCapacity) {
+        // The event is at full capacity
+        QMessageBox::warning(this, "Error", "The event is at full capacity.");
+        return;
+    } else {
+        // The event is not at full capacity, proceed with adding the member to the event
+        QString query = "INSERT INTO Attends (MemberID, EventID, BranchID) VALUES (:memberId, :eventId, :branchId)";
+        QSqlQuery q;
+        q.prepare(query);
+        q.bindValue(":memberId", memberID);
+        q.bindValue(":eventId", eventID);
+        q.bindValue(":branchId", branchId);
+        if(q.exec()){
+            qDebug() << "Data inserted successfully";
+        }
+        else{
+            qDebug() << "Error inserting data:" << q.lastError().text();
+            QMessageBox::warning(this, "Error", "Unable to add member to event.");
+        }
+        inspectMember();
+    }
+
+    
+   
+   
+
+}
+QString MembersPage::getBranchId() {
+    // Prepare the query to call the SQL function
+    QString librarianId = CommonData::getInstance().getUsername();
+    QSqlQuery query;
+    query.prepare("SELECT dbo.GetBranchIdByLibrarianId(:librarianId) AS BranchId");
+    query.bindValue(":librarianId", librarianId); // Bind the LibrarianID parameter
+
+    // Execute the query
+    if (query.exec()) {
+        // Check if the query returned a result
+        if (query.next()) {
+            // Retrieve the BranchID from the result
+            QString branchId = query.value("BranchId").toString();
+            return branchId;
+            // Now you have the BranchID associated with the LibrarianID
+        }
+        else {
+            // The query didn't return any result
+            qDebug() << "No branch ID found for librarian ID:" << librarianId;
+        }
+    }
+    else {
+        // The query execution failed
+        qDebug() << "Error executing query:" << query.lastError().text();
+    }
+
+}
+void MembersPage::deleteMemberFromEvent(){
+    QItemSelectionModel* select = attendedEventsTable->selectionModel();
+    QModelIndexList rows = select->selectedRows();
+    QModelIndex index = rows.at(0);
+    QVariant data = attendedEventsTable->model()->data(index.siblingAtColumn(0));
+    QString eventID = data.toString();
+    QString memberID = searchForMemberIdTF->text();
+    QString query = "DELETE FROM Attends WHERE MemberID = :memberId AND EventID = :eventId";
+    QSqlQuery q;
+    q.prepare(query);
+    q.bindValue(":memberId", memberID);
+    q.bindValue(":eventId", eventID);
+    if(q.exec()){
+        qDebug() << "Data deleted successfully";
+    }
+    else{
+        qDebug() << "Error deleting data:" << q.lastError().text();
+        QMessageBox::warning(this, "Error", "Unable to delete member from event.");
+    }
+    inspectMember();
+}
