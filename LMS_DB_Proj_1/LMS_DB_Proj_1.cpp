@@ -24,12 +24,12 @@ void LMS_DB_Proj_1::setupUi()
 
     // Create sidebar buttons with icons
     sidebarWidget = new QWidget(this);
-    sidebarWidget->setStyleSheet("background-color: #c0c0c0;"); // Set background color to gray
+    sidebarWidget->setStyleSheet("background-color: #abc4af;"); // Set background color to gray
     sidebarLayout = new QVBoxLayout(sidebarWidget);
 
     // Menu Buttons with Icons
     menuHomeButton = new QPushButton(sidebarWidget);
-    menuHomeButton->setIcon(QIcon(":/icons/Home_1.png"));
+    menuHomeButton->setIcon(QIcon(":/icons/home_icon.png"));
     menuHomeButton->setIconSize(QSize(50, 50));
     menuHomeButton->setProperty("active", false); // Initially inactive
     menuHomeButton->setStyleSheet("background-color: #c0c0c0;"); // Set initial background color
@@ -59,12 +59,27 @@ void LMS_DB_Proj_1::setupUi()
     menuEventsButton->setProperty("active", false); // Initially inactive
     menuEventsButton->setStyleSheet("background-color: #c0c0c0;"); // Set initial background color
 
+    menuAuthorsPublishersButton = new QPushButton(sidebarWidget);
+    menuAuthorsPublishersButton->setIcon(QIcon(":/icons/AuthorsPublishers2.png"));
+    menuAuthorsPublishersButton->setIconSize(QSize(50, 50));
+    menuAuthorsPublishersButton->setProperty("active", false); // Initially inactive
+    menuAuthorsPublishersButton->setStyleSheet("background-color: #c0c0c0;"); // Set initial background color
+
+    menuStaffButton = new QPushButton(sidebarWidget);
+    menuStaffButton->setIcon(QIcon(":/icons/Staff.png"));
+    menuStaffButton->setIconSize(QSize(50, 50));
+    menuStaffButton->setProperty("active", false); // Initially inactive
+    menuStaffButton->setStyleSheet("background-color: #c0c0c0;"); // Set initial background color
+    menuStaffButton->hide();
+
+
     sidebarLayout->addWidget(menuHomeButton);
     sidebarLayout->addWidget(menuMembersButton);
-    
-    sidebarLayout->addWidget(menuLoginButton);
+    sidebarLayout->addWidget(menuAuthorsPublishersButton);
     sidebarLayout->addWidget(menuBooksButton);
     sidebarLayout->addWidget(menuEventsButton);
+    sidebarLayout->addWidget(menuStaffButton);
+    sidebarLayout->addWidget(menuLoginButton);
 
     // Create stacked widget for main pages
     stackedWidget = new QStackedWidget(centralWidget);
@@ -74,6 +89,8 @@ void LMS_DB_Proj_1::setupUi()
     memberCustomPage = new MemberCustomPage;
     booksPage = new BooksPage;
     eventsPage = new EventsPage;
+    authorsPublishersPage = new AuthorsPublishersPage;
+    staffPage = new StaffPage;
 
     stackedWidget->addWidget(loginPage);
     stackedWidget->addWidget(homePage);
@@ -81,6 +98,8 @@ void LMS_DB_Proj_1::setupUi()
     stackedWidget->addWidget(memberCustomPage);
     stackedWidget->addWidget(booksPage);
     stackedWidget->addWidget(eventsPage);
+    stackedWidget->addWidget(authorsPublishersPage);
+    stackedWidget->addWidget(staffPage);
 
 
     // Layout for central widget
@@ -106,6 +125,26 @@ void LMS_DB_Proj_1::setupUi()
     menuSettingsButton->setStyleSheet("background-color: #c0c0c0;"); // Set initial background color
     menuSettingsButton->hide(); // Initially hide the button
     sidebarLayout->addWidget(menuSettingsButton);
+
+    
+
+    QFile styleFile("stylesheet.qss");
+    if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
+
+        QString styleSheet = QLatin1String(styleFile.readAll());
+        menuAuthorsPublishersButton->setStyleSheet(styleSheet);
+        menuBooksButton->setStyleSheet(styleSheet);
+        menuEventsButton->setStyleSheet(styleSheet);
+        menuHomeButton->setStyleSheet(styleSheet);
+        menuMembersButton->setStyleSheet(styleSheet);
+        menuLoginButton->setStyleSheet(styleSheet);
+        menuSettingsButton->setStyleSheet(styleSheet);
+        menuStaffButton->setStyleSheet(styleSheet);
+
+        styleFile.close();
+        
+
+    }
     
     
 
@@ -118,6 +157,14 @@ void LMS_DB_Proj_1::setupConnections()
         });
     connect(menuEventsButton, &QPushButton::clicked, [=]() {
         stackedWidget->setCurrentWidget(eventsPage);
+        updateButtonStatus(menuEventsButton, true); // Set members button active
+        updateButtonStatus(menuHomeButton, false);
+        updateButtonStatus(menuMembersButton, false);
+        updateButtonStatus(menuSettingsButton, false);
+        updateButtonStatus(menuBooksButton, false);
+        updateButtonStatus(menuAuthorsPublishersButton, false);
+        updateButtonStatus(menuStaffButton, false);
+        showSidebar(true);
         });
 
     connect(loginPage, &LoginPage::loginSuccessful, [=]() {
@@ -126,7 +173,7 @@ void LMS_DB_Proj_1::setupConnections()
     showSidebar(true);
     smallIdL->setText("ID: " + CommonData::getInstance().getUsername());
     userType->assign(CommonData::getInstance().getType());
-    showEventsPage();
+    showStaffPage();
         });
 
     connect(menuLoginButton, &QPushButton::clicked, [=]() {
@@ -139,6 +186,11 @@ void LMS_DB_Proj_1::setupConnections()
         stackedWidget->setCurrentWidget(membersPage);
     updateButtonStatus(menuMembersButton, true); // Set members button active
     updateButtonStatus(menuHomeButton, false);
+    updateButtonStatus(menuBooksButton, false);
+    updateButtonStatus(menuSettingsButton, false);
+    updateButtonStatus(menuEventsButton, false);
+    updateButtonStatus(menuAuthorsPublishersButton, false);
+    updateButtonStatus(menuStaffButton, false);
     showSidebar(true);
         });
 
@@ -146,6 +198,11 @@ void LMS_DB_Proj_1::setupConnections()
         stackedWidget->setCurrentWidget(homePage);
     updateButtonStatus(menuMembersButton, false); // Set members button active
     updateButtonStatus(menuHomeButton, true);
+    updateButtonStatus(menuBooksButton, false);
+    updateButtonStatus(menuSettingsButton, false);
+    updateButtonStatus(menuEventsButton, false);
+    updateButtonStatus(menuAuthorsPublishersButton, false);
+    updateButtonStatus(menuStaffButton, false);
     showSidebar(true);
         });
 
@@ -154,6 +211,34 @@ void LMS_DB_Proj_1::setupConnections()
     updateButtonStatus(menuBooksButton, true); // Set members button active
     updateButtonStatus(menuHomeButton, false);
     updateButtonStatus(menuMembersButton, false);
+    updateButtonStatus(menuSettingsButton, false);
+    updateButtonStatus(menuEventsButton, false);
+    updateButtonStatus(menuAuthorsPublishersButton, false);
+    updateButtonStatus(menuStaffButton, false);
+    showSidebar(true);
+        });
+    connect(menuAuthorsPublishersButton, &QPushButton::clicked, [=]() {
+        stackedWidget->setCurrentWidget(authorsPublishersPage);
+    updateButtonStatus(menuAuthorsPublishersButton, true); // Set members button active
+    updateButtonStatus(menuSettingsButton, false); // Set members button active
+    updateButtonStatus(menuHomeButton, false);
+    updateButtonStatus(menuMembersButton, false);
+    updateButtonStatus(menuBooksButton, false);
+    updateButtonStatus(menuEventsButton, false);
+    updateButtonStatus(menuStaffButton, false);
+
+    showSidebar(true);
+        });
+    connect(menuStaffButton, &QPushButton::clicked, [=]() {
+        stackedWidget->setCurrentWidget(staffPage);
+    updateButtonStatus(menuStaffButton, true); // Set members button active
+    updateButtonStatus(menuHomeButton, false);
+    updateButtonStatus(menuMembersButton, false);
+    updateButtonStatus(menuBooksButton, false);
+    updateButtonStatus(menuSettingsButton, false);
+    updateButtonStatus(menuEventsButton, false);
+    updateButtonStatus(menuAuthorsPublishersButton, false);
+    
     showSidebar(true);
         });
 }
@@ -166,13 +251,14 @@ void LMS_DB_Proj_1::showSidebar(bool show)
 void LMS_DB_Proj_1::updateButtonStatus(QPushButton* button, bool active)
 {
     button->setProperty("active", active); // Update button status
-    button->setStyleSheet(active ? "background-color: white;" : "background-color: #c0c0c6;"); // Change background color based on status
+    button->style()->unpolish(button);
+    button->style()->polish(button);
 }
 
-void LMS_DB_Proj_1::showEventsPage() {
+void LMS_DB_Proj_1::showStaffPage() {
     if (userType->compare("M") == 0) {
-        menuSettingsButton->show();
+        menuStaffButton->show();
     } else {
-        menuSettingsButton->hide();
+        menuStaffButton->hide();
     }
 }

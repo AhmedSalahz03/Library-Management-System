@@ -11,14 +11,17 @@ EventsPage::EventsPage(QWidget *parent)
     eventTitleTF = new QLineEdit(this);
     eventTitleTF->move(20, startY);
     setSizeForLineEdit(eventTitleTF);
+    eventTitleTF->setPlaceholderText("Event Title");
 
     eventDescriptionTF = new QLineEdit(this);
     eventDescriptionTF->move(20, startY + spacing);
     setSizeForLineEdit(eventDescriptionTF);
+    eventDescriptionTF->setPlaceholderText("Event Description");
 
     eventMaxCapacityTF = new QLineEdit(this);
     eventMaxCapacityTF->move(20, startY + 2 * spacing);
     setSizeForLineEdit(eventMaxCapacityTF);
+    eventMaxCapacityTF->setPlaceholderText("Max Capacity");
 
     eventDateTF = new QDateEdit(this);
     eventDateTF->move(20, startY + 3 * spacing);
@@ -42,7 +45,7 @@ EventsPage::EventsPage(QWidget *parent)
     allEventsTable = new QTableView(this);
     allEventsTable->setParent(this); // Set the parent to the MembersPage widget
     allEventsTable->setModel(allEventsTableModel);
-    allEventsTable->setGeometry(500, startY, 1000, 900);
+    allEventsTable->setGeometry(500, startY, 800, 600);
     // Enable row selection
     allEventsTable->setSelectionMode(QAbstractItemView::ContiguousSelection);
 
@@ -122,6 +125,10 @@ void EventsPage::setSizeForLineEdit(QLineEdit* LineEdit) {
     LineEdit->resize(350, 40);
 }
 void EventsPage::deleteSelectedRow(QTableView* tableView, QSqlTableModel* tableModel) {
+    if(CommonData::getInstance().getType() != "M") {
+        QMessageBox::warning(this, "Error", "You are not authorized to delete events");
+        return;
+    }
     QModelIndexList selectedRows = tableView->selectionModel()->selectedRows();
     // Check if there's at least one selected row
     if (!selectedRows.isEmpty()) {

@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include "CommonData.h"
+#include <QLabel>
 
 class LoginPage : public QWidget
 {
@@ -25,6 +26,7 @@ private:
     QLineEdit* passwordTF;
     QPushButton* loginBtn;
     QString* librarianId;
+    QLabel* title;
     
 
 private slots:

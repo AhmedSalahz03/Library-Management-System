@@ -89,12 +89,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AuthorsPublishersPage.cpp" />
     <ClCompile Include="BooksPage.cpp" />
     <ClCompile Include="CommonData.cpp" />
     <ClCompile Include="EventsPage.cpp" />
     <ClCompile Include="MemberCustomPage.cpp" />
     <ClCompile Include="MembersPage.cpp" />
+    <ClCompile Include="StaffPage.cpp" />
     <QtRcc Include="LMS_DB_Proj_1.qrc" />
+    <QtUic Include="AuthorsPublishersPage.ui" />
     <QtUic Include="BooksPage.ui" />
     <QtUic Include="EventsPage.ui" />
     <QtUic Include="HomePage.ui" />
@@ -107,6 +110,7 @@
     <QtUic Include="loginPage.ui" />
     <QtUic Include="MemberCustomPage.ui" />
     <QtUic Include="MembersPage.ui" />
+    <QtUic Include="StaffPage.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="loginPage.h" />
@@ -121,8 +125,10 @@
     <QtMoc Include="EventsPage.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="StaffPage.h" />
     <QtMoc Include="MemberCustomPage.h" />
     <QtMoc Include="BooksPage.h" />
+    <QtMoc Include="AuthorsPublishersPage.h" />
     <ClInclude Include="CommonData.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

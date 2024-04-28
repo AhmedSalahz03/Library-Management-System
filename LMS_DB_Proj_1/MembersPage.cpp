@@ -20,27 +20,40 @@ MembersPage::MembersPage(QWidget *parent)
 	ui.setupUi(this);
     int startY = 40; // Initial y-coordinate for the first QLineEdit
     int spacing = 60; // Spacing between QLineEdit widgets
+    addNewMemberL = new QLabel("Add New Member", this);
+    addNewMemberL->move(20, 10);
+    QFont font = addNewMemberL->font();
+    font.setPointSize(15);
+    font.setBold(true);
+    addNewMemberL->setFont(font);
 
     firstNameTF = new QLineEdit(this);
     firstNameTF->move(20, startY);
+    firstNameTF->setPlaceholderText("First Name");
     setSizeForLineEdit(firstNameTF);
     lastNameTF = new QLineEdit(this);
     lastNameTF->move(20, startY + spacing);
+    lastNameTF->setPlaceholderText("Last Name");
     setSizeForLineEdit(lastNameTF);
     phoneTF = new QLineEdit(this);
     phoneTF->move(20, startY + 2 * spacing);
+    phoneTF->setPlaceholderText("Phone");
     setSizeForLineEdit(phoneTF);
     streetTF = new QLineEdit(this);
     streetTF->move(20, startY + 3 * spacing);
+    streetTF->setPlaceholderText("Street");
     setSizeForLineEdit(streetTF);
     cityTF = new QLineEdit(this);
     cityTF->move(20, startY + 4 * spacing);
+    cityTF->setPlaceholderText("City");
     setSizeForLineEdit(cityTF);
     zipcodeTF = new QLineEdit(this);
     zipcodeTF->move(20, startY + 5 * spacing);
+    zipcodeTF->setPlaceholderText("Zipcode");
     setSizeForLineEdit(zipcodeTF);
     emailTF = new QLineEdit(this);
     emailTF->move(20, startY + 6 * spacing);
+    emailTF->setPlaceholderText("Email");
     setSizeForLineEdit(emailTF);
     insertBtn = new QPushButton("Insert Data", this);
     insertBtn->move(20, startY + 8 * spacing);
@@ -87,6 +100,18 @@ MembersPage::MembersPage(QWidget *parent)
     cityInspectL = new QLabel(this);
     streetInspectL = new QLabel(this);
     
+    QFont fontInspect = fNameInspectL->font();
+    fontInspect.setPointSize(12);
+    fontInspect.setBold(true);
+    fNameInspectL->setFont(fontInspect);
+    lNameInspectL->setFont(fontInspect);
+    emailInspectL->setFont(fontInspect);
+    phoneInspectL->setFont(fontInspect);
+    zipcodeInspectL->setFont(fontInspect);
+    cityInspectL->setFont(fontInspect);
+    streetInspectL->setFont(fontInspect);
+
+
     fNameInspectL->move(20, startY);
     lNameInspectL->move(20, startY + spacing);
     phoneInspectL->move(20, startY + 2 * spacing);
@@ -94,6 +119,14 @@ MembersPage::MembersPage(QWidget *parent)
     cityInspectL->move(20, startY + 4 * spacing);
     zipcodeInspectL->move(20, startY + 5 * spacing);
     emailInspectL->move(20, startY + 6 * spacing);
+
+    fNameInspectL->resize(300, 40);
+    lNameInspectL->resize(300, 40);
+    phoneInspectL->resize(300, 40);
+    streetInspectL->resize(300, 40);
+    cityInspectL->resize(300, 40);
+    zipcodeInspectL->resize(300, 40);
+    emailInspectL->resize(300, 40);
 
     doneInspectingBtn = new QPushButton(this);
     doneInspectingBtn->setText("Back");
@@ -109,6 +142,7 @@ MembersPage::MembersPage(QWidget *parent)
     doneInspectingBtn->hide();
     
     lendCopyIdTF = new QLineEdit(this);
+    lendCopyIdTF->setPlaceholderText("Copy ID");
     lendStartDate = new QDateEdit(this);
     lendDueDate = new QDateEdit(this);
     lendBtn = new QPushButton(this);
@@ -146,7 +180,7 @@ MembersPage::MembersPage(QWidget *parent)
     attendedEventsTable = new QTableView(this);
     attendedEventsTable->setParent(this); // Set the parent to the MembersPage widget
     attendedEventsTable->setModel(attendedEventsModel);
-    attendedEventsTable->setGeometry(300, startY+500, 500, 400);
+    attendedEventsTable->setGeometry(300, startY+400, 500, 400);
     attendedEventsTable->setSelectionMode(QAbstractItemView::ContiguousSelection);
     attendedEventsTable->hide();
 
@@ -161,8 +195,18 @@ MembersPage::MembersPage(QWidget *parent)
 
     deleteMemberFromEventBtn = new QPushButton(this);
     deleteMemberFromEventBtn->setText("Delete Member from Event");
-    deleteMemberFromEventBtn->move(1200, startY + 10 * spacing);
+    deleteMemberFromEventBtn->move(1000, startY + 10 * spacing);
     deleteMemberFromEventBtn->hide();
+
+    //fineModel = new QSqlTableModel(this);
+    //fineModel->setTable("Fines");
+    //fineModel->select();
+    //fineTable = new QTableView(this);
+    //fineTable->setParent(this);
+    //fineTable->setModel(fineModel);
+    //fineTable->setGeometry(800, startY + 300, 300, 100);
+    //fineTable->setSelectionMode(QAbstractItemView::ContiguousSelection);
+    //fineTable->hide();
 
     // Connect the Stylesheet File
     QFile styleFile("stylesheet.qss");
@@ -190,6 +234,8 @@ MembersPage::MembersPage(QWidget *parent)
         eventIdTF->setStyleSheet(styleSheet);
         addMemberToEventBtn->setStyleSheet(styleSheet);
         deleteMemberFromEventBtn->setStyleSheet(styleSheet);
+        //fineTable->setStyleSheet(styleSheet);
+
         styleFile.close();
         
 
@@ -343,6 +389,8 @@ void MembersPage::inspectMember() {
         qDebug() << "Error executing query:" << q3.lastError().text();
     }
 
+    
+
     // Update the text of the QLabel to display the attributes
     fNameInspectL->setText("First Name: " + fName);
     lNameInspectL->setText("Last Name: " + lName);
@@ -370,6 +418,7 @@ void MembersPage::inspectMember() {
     eventIdTF->show();
     addMemberToEventBtn->show();
     deleteMemberFromEventBtn->show();
+    //fineTable->show();
 
     firstNameTF->hide();
     lastNameTF->hide();
@@ -382,6 +431,7 @@ void MembersPage::inspectMember() {
     deleteMemberBtn->hide();
     searchForMemberIdBtn->hide();
     searchForMemberIdTF->hide();
+    addNewMemberL->hide();
 
 
 }
@@ -404,6 +454,7 @@ void MembersPage::backToTableView() {
     eventIdTF->hide();
     addMemberToEventBtn->hide();
     deleteMemberFromEventBtn->hide();
+    //fineTable->hide();
 
     allMembersTableView->show();
     firstNameTF->show();
@@ -417,6 +468,7 @@ void MembersPage::backToTableView() {
     deleteMemberBtn->show();
     searchForMemberIdBtn->show();
     searchForMemberIdTF->show();
+    addNewMemberL->show();
 }
 void MembersPage::lend() {
     QString copyIdLend = lendCopyIdTF->text();

@@ -37,6 +37,11 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     LMS_DB_Proj_1 w;
+    w.setWindowTitle("Library Management System");
+    w.resize(1200, 700);
     w.show();
+
+    
+
     return a.exec();
 }

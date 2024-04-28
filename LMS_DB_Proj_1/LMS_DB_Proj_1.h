@@ -13,6 +13,8 @@
 #include "MemberCustomPage.h"
 #include "BooksPage.h"
 #include "Eventspage.h"
+#include "AuthorsPublishersPage.h"
+#include "StaffPage.h"
 
 class LMS_DB_Proj_1 : public QMainWindow
 {
@@ -34,6 +36,9 @@ private:
     BooksPage* booksPage;
     MemberCustomPage* memberCustomPage;
     EventsPage* eventsPage;
+    AuthorsPublishersPage* authorsPublishersPage;
+    StaffPage* staffPage;
+
     QWidget* sidebarWidget; // Sidebar container
     QVBoxLayout* sidebarLayout; // Layout for sidebar buttons
 
@@ -43,6 +48,8 @@ private:
     QPushButton* menuLoginButton;
     QPushButton* menuBooksButton;
     QPushButton* menuEventsButton;
+    QPushButton* menuAuthorsPublishersButton;
+    QPushButton* menuStaffButton;
 
     QLabel* smallIdL;
 
@@ -50,6 +57,6 @@ private:
     void setupConnections();
     void showSidebar(bool show); // Method to show/hide the sidebar
     void updateButtonStatus(QPushButton*, bool);
-    void showEventsPage();
+    void showStaffPage();
 
 };

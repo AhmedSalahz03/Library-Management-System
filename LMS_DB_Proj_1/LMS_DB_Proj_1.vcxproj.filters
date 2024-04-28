@@ -61,6 +61,12 @@
     <ClCompile Include="BooksPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AuthorsPublishersPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StaffPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="loginPage.h">
@@ -81,6 +87,12 @@
     <QtMoc Include="BooksPage.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="AuthorsPublishersPage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StaffPage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="loginPage.ui">
@@ -99,6 +111,12 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="BooksPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="AuthorsPublishersPage.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="StaffPage.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

@@ -17,6 +17,8 @@
 #include <QtDebug>
 #include <qsql.h>
 #include <QSqlDatabase>
+#include <qcombobox.h>
+#include <qradiobutton.h>
 
 class BooksPage : public QWidget
 {
@@ -26,6 +28,10 @@ public:
 	BooksPage(QWidget *parent = nullptr);
 	~BooksPage();
 
+	QLabel* searchLabel;
+	QLabel* allBooksLabel;
+	QLabel* filterLabel;
+
 	QLineEdit* searchForBookTF;
 	QSqlTableModel* searchedBookTableModel;
 	QTableView* searchedBookTableView;
@@ -33,18 +39,40 @@ public:
 	
 	QPushButton* newBatchBtn;
 	QLineEdit* bookNameTF;
-	QLineEdit* authorNameTF;
-	QLineEdit* editionTF;
+	QLineEdit* authorIdTF;
+	QLineEdit* editionTF;											
 	QLineEdit* publisherIdTF;
 	QLineEdit* noOfPagesTF;
-	QLineEdit* languageTF;
+	QComboBox* languageCB;
 	QLineEdit* noOfCopiesTF;
-	QChoiceBox* categoryCB;
+	QComboBox* category1CB;
+	QComboBox* category2CB;
 	QLineEdit* supplierIdTF;
 
 	QPushButton* addBatchBtn;
+	QPushButton* backBtn;
+
+	QSqlTableModel* allBooksModel;
+	QTableView* allBooksTable;
+	QPushButton* deleteBookBtn;
+
+	QButtonGroup* filterButtonGroup;
+	QRadioButton* filterByBookName;
+	QRadioButton* filterByAuthor;
+	QRadioButton* filterByPublisher;
+	QRadioButton* filterByLanguage;
+	QRadioButton* filterByCategory;
+
+	QComboBox* filterCB;
+
+
 public slots:
 	void searchForBook();
+	void newBatch();
+	void addBatch();
+	void back();
+	void deleteSelectedRow(QTableView* tableView, QSqlTableModel* tableModel);
+
 private:
 	Ui::BooksPageClass ui;
 };

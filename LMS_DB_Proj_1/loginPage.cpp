@@ -29,6 +29,13 @@ LoginPage::LoginPage(QWidget* parent) : QWidget(parent)
     int spacing = 60;
     int center = 650;
 
+
+    title = new QLabel("Library Management System", this);
+    title->move(startX + center-100, startY+100);
+    QFont font = title->font();
+    font.setPointSize(20);
+    title->setFont(font);
+
     userIdTF = new QLineEdit(this);
     passwordTF = new QLineEdit(this);
     passwordTF->setEchoMode(QLineEdit::Password);

@@ -36,6 +36,8 @@ public slots:
 
 private:
 	Ui::MembersPageClass ui;
+
+	QLabel* addNewMemberL;
 	QLineEdit* firstNameTF;
 	QLineEdit* lastNameTF;
 	QLineEdit* phoneTF;
@@ -44,6 +46,10 @@ private:
 	QLineEdit* zipcodeTF;
 	QLineEdit* emailTF;
 	QPushButton* insertBtn;
+
+	QLabel* allMembersL;
+	QLabel* borrowedBooksL;
+	QLabel* attendedEventsL;
 
 	QSqlTableModel* allMembersModel;
 	QTableView* allMembersTableView;
@@ -74,6 +80,8 @@ private:
 	QLineEdit* eventIdTF;
 	QPushButton* addMemberToEventBtn;
 	QPushButton* deleteMemberFromEventBtn;
-	
+
+	QSqlTableModel* fineModel;
+	QTableView* fineTable;	
 
 };

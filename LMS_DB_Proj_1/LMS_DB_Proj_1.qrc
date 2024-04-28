@@ -9,5 +9,8 @@
         <file>icons/Books_Icon.png</file>
         <file>icons/Home_1.png</file>
         <file>icons/Events.png</file>
+        <file>icons/AuthorsPublishers.png</file>
+        <file>icons/Staff.png</file>
+        <file>icons/AuthorsPublishers2.png</file>
     </qresource>
 </RCC>

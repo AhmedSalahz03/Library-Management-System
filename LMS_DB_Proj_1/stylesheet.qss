@@ -53,3 +53,10 @@ QTableView::horizontalHeader {
 QTableView::verticalHeader {
     border-right: 1px solid #ccc; /* Add border at right of vertical header */
 }
+QPushButton[active="true"] {
+    background-color: #90ee90; /* Light green */
+}
+
+QPushButton[active="false"] {
+    background-color: #c0c0c6;
+}

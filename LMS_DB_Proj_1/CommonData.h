@@ -3,7 +3,9 @@
 #define COMMONDATA_H
 
 #include <QString>
-
+#include <QSql>
+#include <QSqlQuery>
+#include <QSqlError>
 class CommonData {
 public:
     static CommonData& getInstance();
@@ -14,9 +16,13 @@ public:
     void setType(const QString& type);
     QString getType() const;
 
+    void setBranchId(const QString& branchId);
+    QString getBranchId() const;
+
 private:
     QString username;
     QString type;
+    QString branchId;
 
     CommonData(); // Private constructor for singleton
     CommonData(const CommonData&) = delete; // Prevent copy construction
